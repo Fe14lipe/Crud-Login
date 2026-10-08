@@ -1,0 +1,13 @@
+{
+  "name": "crud_login",
+  "version": "1.0.0",
+  "description": "CRUD de streams de fútbol con Login, patrón MVC (Express + Vanilla JS)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-session": "^1.18.0"
+  }
+}

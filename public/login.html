@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login - Pomasqui Stream</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0b3d1e; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    form { background: #fff; padding: 30px; border-radius: 10px; width: 280px; }
+    h2 { margin-top: 0; text-align: center; }
+    input, button { width: 100%; padding: 10px; margin-top: 10px; box-sizing: border-box; }
+    button { background: #157a38; color: #fff; border: 0; border-radius: 5px; cursor: pointer; }
+    #error { color: red; text-align: center; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <form id="login">
+    <h2>⚽ Pomasqui Stream</h2>
+    <input id="username" placeholder="Usuario" required>
+    <input id="password" type="password" placeholder="Contraseña" required>
+    <button>Ingresar</button>
+    <div id="error"></div>
+  </form>
+  <script>
+    document.getElementById('login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: username.value, password: password.value }),
+      });
+      if (res.ok) location.href = '/';
+      else document.getElementById('error').textContent = (await res.json()).error;
+    });
+  </script>
+</body>
+</html>

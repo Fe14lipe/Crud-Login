@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Streams de Fútbol</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f2f5f3; margin: 0; padding: 20px; }
+    header { display: flex; justify-content: space-between; align-items: center; }
+    form, table { background: #fff; width: 100%; max-width: 800px; margin: 15px auto; padding: 15px; border-radius: 8px; box-sizing: border-box; }
+    form { display: flex; gap: 8px; flex-wrap: wrap; }
+    input, select { padding: 8px; flex: 1; min-width: 120px; }
+    button { padding: 8px 12px; border: 0; border-radius: 5px; background: #157a38; color: #fff; cursor: pointer; }
+    button.del { background: #c0282d; }
+    button.edit { background: #8a5a00; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>⚽ Streams de Fútbol</h1>
+    <button id="logout">Cerrar sesión</button>
+  </header>
+
+  <form id="form">
+    <input id="title" placeholder="Partido (ej. Boca vs River)" required>
+    <input id="league" placeholder="Liga" required>
+    <select id="estado">
+      <option>EN VIVO</option>
+      <option>PRÓXIMO</option>
+      <option>FINALIZADO</option>
+    </select>
+    <button id="save">Agregar</button>
+  </form>
+
+  <table>
+    <thead><tr><th>Partido</th><th>Liga</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <tbody id="lista"></tbody>
+  </table>
+
+  <script>
+    let editId = null; // null = creando, número = editando
+    let streams = [];
+    const esc = (t) => String(t).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`); // evita inyectar HTML
+    const api = '/api/streams';
+    const json = { 'Content-Type': 'application/json' };
+
+    // Si la sesión expiró, el servidor responde 401 y volvemos al login
+    async function request(url, options) {
+      const res = await fetch(url, options);
+      if (res.status === 401) { location.href = '/login.html'; throw new Error('401'); }
+      return res.json();
+    }
+
+    // READ
+    async function cargar() {
+      streams = await request(api);
+      lista.innerHTML = streams.map((s) => `
+        <tr>
+          <td>${esc(s.title)}</td><td>${esc(s.league)}</td><td>${esc(s.status)}</td>
+          <td>
+            <button class="edit" onclick="editar(${s.id})">Editar</button>
+            <button class="del" onclick="borrar(${s.id})">Eliminar</button>
+          </td>
+        </tr>`).join('');
+    }
+
+    // CREATE / UPDATE
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const body = JSON.stringify({ title: title.value, league: league.value, status: estado.value });
+      await request(editId ? `${api}/${editId}` : api, { method: editId ? 'PUT' : 'POST', headers: json, body });
+      editId = null; form.reset(); save.textContent = 'Agregar';
+      cargar();
+    });
+
+    function editar(id) {
+      const s = streams.find((x) => x.id === id);
+      editId = s.id;
+      title.value = s.title; league.value = s.league; estado.value = s.status;
+      save.textContent = 'Guardar cambios';
+    }
+
+    // DELETE
+    async function borrar(id) {
+      if (!confirm('¿Eliminar este stream?')) return;
+      await request(`${api}/${id}`, { method: 'DELETE' });
+      cargar();
+    }
+
+    logout.addEventListener('click', async () => {
+      await fetch('/api/logout', { method: 'POST' });
+      location.href = '/login.html';
+    });
+
+    cargar();
+  </script>
+</body>
+</html>
