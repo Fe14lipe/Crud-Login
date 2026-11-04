@@ -24,17 +24,20 @@
 
   <form id="form">
     <input id="title" placeholder="Partido (ej. Boca vs River)" required>
-    <input id="league" placeholder="Liga" required>
+    <select id="pais" required></select>
+    <select id="liga" required><option value="">Liga...</option></select>
     <select id="estado">
       <option>EN VIVO</option>
       <option>PRÓXIMO</option>
       <option>FINALIZADO</option>
     </select>
+    <input id="url" type="url" placeholder="URL del stream (https://...)" required>
     <button id="save">Agregar</button>
   </form>
+  <p id="msg" style="color:#c0282d; text-align:center"></p>
 
   <table>
-    <thead><tr><th>Partido</th><th>Liga</th><th>Estado</th><th>Acciones</th></tr></thead>
+    <thead><tr><th>Partido</th><th>País</th><th>Liga</th><th>Estado</th><th>URL</th><th>Acciones</th></tr></thead>
     <tbody id="lista"></tbody>
   </table>
 
@@ -49,15 +52,30 @@
     async function request(url, options) {
       const res = await fetch(url, options);
       if (res.status === 401) { location.href = '/login.html'; throw new Error('401'); }
-      return res.json();
+      const data = await res.json();
+      if (!res.ok) { msg.textContent = data.error; throw new Error(data.error); } // error validado en el back-end
+      msg.textContent = '';
+      return data;
     }
+
+    // Dropdown dependiente: al elegir país se cargan solo sus ligas
+    async function cargarPaises() {
+      const paises = await request('/api/paises');
+      pais.innerHTML = '<option value="">País...</option>' + paises.map((p) => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
+    }
+    async function cargarLigas(paisId, ligaId = '') {
+      const ligas = paisId ? await request(`/api/paises/${paisId}/ligas`) : [];
+      liga.innerHTML = '<option value="">Liga...</option>' + ligas.map((l) => `<option value="${l.id}">${esc(l.nombre)}</option>`).join('');
+      liga.value = ligaId;
+    }
+    pais.addEventListener('change', () => cargarLigas(pais.value));
 
     // READ
     async function cargar() {
       streams = await request(api);
       lista.innerHTML = streams.map((s) => `
         <tr>
-          <td>${esc(s.title)}</td><td>${esc(s.league)}</td><td>${esc(s.status)}</td>
+          <td>${esc(s.titulo)}</td><td>${esc(s.pais)}</td><td>${esc(s.liga)}</td><td>${esc(s.estado)}</td><td>${esc(s.url)}</td>
           <td>
             <button class="edit" onclick="editar(${s.id})">Editar</button>
             <button class="del" onclick="borrar(${s.id})">Eliminar</button>
@@ -68,16 +86,19 @@
     // CREATE / UPDATE
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const body = JSON.stringify({ title: title.value, league: league.value, status: estado.value });
-      await request(editId ? `${api}/${editId}` : api, { method: editId ? 'PUT' : 'POST', headers: json, body });
-      editId = null; form.reset(); save.textContent = 'Agregar';
+      const body = JSON.stringify({ titulo: title.value, liga_id: liga.value, estado: estado.value, url: url.value });
+      try { await request(editId ? `${api}/${editId}` : api, { method: editId ? 'PUT' : 'POST', headers: json, body }); }
+      catch { return; }
+      editId = null; form.reset(); cargarLigas(''); save.textContent = 'Agregar';
       cargar();
     });
 
-    function editar(id) {
+    async function editar(id) {
       const s = streams.find((x) => x.id === id);
       editId = s.id;
-      title.value = s.title; league.value = s.league; estado.value = s.status;
+      title.value = s.titulo; estado.value = s.estado; url.value = s.url;
+      pais.value = s.pais_id;
+      await cargarLigas(s.pais_id, s.liga_id);
       save.textContent = 'Guardar cambios';
     }
 
@@ -93,6 +114,7 @@
       location.href = '/login.html';
     });
 
+    cargarPaises();
     cargar();
   </script>
 </body>

@@ -24,7 +24,7 @@ Proyecto académico que aplica el patrón **MVC**, operaciones **CRUD** y **aute
 
 ## Estado del proyecto
 
-✅ **Funcional.** Login, protección de rutas y CRUD de streams completos. Los datos viven en memoria (ver [Limitaciones](#limitaciones-y-próximos-pasos)).
+✅ **Funcional.** Login, protección de rutas y CRUD de streams con base de datos **PostgreSQL**.
 
 ## Funcionalidades
 
@@ -32,7 +32,9 @@ Proyecto académico que aplica el patrón **MVC**, operaciones **CRUD** y **aute
 - **Rutas protegidas:** la página principal y la API responden solo a usuarios autenticados.
   - Páginas: redirigen a `/login.html`.
   - API: responden `401 No autenticado`.
-- **CRUD de streams:** crear, leer, actualizar y eliminar partidos (título, liga y estado: EN VIVO, PRÓXIMO o FINALIZADO).
+- **CRUD de streams:** crear, leer, actualizar y eliminar partidos (título, país, liga, estado y URL de transmisión).
+- **Dropdowns en cascada:** al elegir el **país** se cargan solo las **ligas** de ese país (no se escribe ninguna clave foránea a mano).
+- **Validación en Back-End del dato sensible** (URL de transmisión): debe ser `https://` y única; título, estado y liga también se validan en el servidor antes de grabar. Las restricciones `UNIQUE`, `FOREIGN KEY` y `CHECK` de la BD son la última barrera.
 - **Contraseña encriptada** con hash MD5.
 - **Credenciales fuera del código:** se configuran en un archivo `.env` que no se sube a Git.
 
@@ -40,9 +42,9 @@ Proyecto académico que aplica el patrón **MVC**, operaciones **CRUD** y **aute
 
 | Componente | Archivo | Responsabilidad |
 |-----------|---------|-----------------|
-| **Model** | Arrays `users` y `streams` en `server.js` | Datos en memoria |
+| **Model** | `models/db.js`, `models/streams.js` | Conexión y consultas SQL parametrizadas (PostgreSQL) |
 | **View** | `views/index.html` y `public/login.html` | Interfaz (HTML + CSS + JS) |
-| **Controller** | `server.js` | Rutas, lógica del CRUD y autenticación |
+| **Controller** | `controllers/streams.js`, `server.js` | Validación, lógica del CRUD, rutas y autenticación |
 
 La vista y el servidor se comunican con **JSON** mediante la **Fetch API**.
 
@@ -51,6 +53,7 @@ La vista y el servidor se comunican con **JSON** mediante la **Fetch API**.
 | Capa | Tecnología |
 |------|-----------|
 | Backend | Node.js + Express.js (API REST) |
+| Base de datos | PostgreSQL (`pg`), administrada con pgAdmin 4 |
 | Frontend | JavaScript puro (Vanilla JS) + HTML + CSS |
 | Comunicación | REST con JSON y Fetch API |
 | Sesiones | `express-session` (cookie de sesión) |
@@ -68,21 +71,23 @@ cd Crud-Login
 npm install
 ```
 
-2. Crear el archivo de configuración a partir de la plantilla:
+2. Crear la base de datos en **pgAdmin 4**: clic derecho en *Databases → Create → Database* con el nombre `pomasqui_stream`; luego abrir *Query Tool*, cargar [`db/schema.sql`](db/schema.sql) y ejecutarlo (F5). Crea las tablas `paises`, `ligas`, `streams` y datos de ejemplo.
+
+3. Crear el archivo de configuración a partir de la plantilla:
 
 ```bash
 cp .env.example .env
 ```
 
-3. Completar `.env` con tu usuario, el **hash MD5** de tu contraseña y un secreto de sesión. Los comandos para generar el hash y el secreto están dentro de `.env.example`.
+4. Completar `.env` con tu usuario, el **hash MD5** de tu contraseña, un secreto de sesión y los datos de conexión a PostgreSQL (`DB_*`). Los comandos para generar el hash y el secreto están dentro de `.env.example`.
 
-4. Iniciar el servidor:
+5. Iniciar el servidor:
 
 ```bash
 npm start
 ```
 
-5. Abrir <http://localhost:3000> en el navegador. Sin sesión, te redirige al login.
+6. Abrir <http://localhost:3000> en el navegador. Sin sesión, te redirige al login.
 
 > El archivo `.env` está en `.gitignore` y nunca se sube al repositorio.
 
@@ -100,6 +105,8 @@ npm start
 |--------|------|--------|-----------|
 | POST | `/api/login` | Iniciar sesión | No |
 | POST | `/api/logout` | Cerrar sesión | No |
+| GET | `/api/paises` | Listar países | Sí |
+| GET | `/api/paises/:id/ligas` | Ligas de un país (dropdown en cascada) | Sí |
 | GET | `/api/streams` | Listar streams | Sí |
 | POST | `/api/streams` | Crear stream | Sí |
 | PUT | `/api/streams/:id` | Actualizar stream | Sí |
@@ -108,14 +115,17 @@ npm start
 Cuerpo de un stream:
 
 ```json
-{ "title": "Boca vs River", "league": "Liga Profesional", "status": "EN VIVO" }
+{ "titulo": "Boca vs River", "liga_id": 4, "estado": "EN VIVO", "url": "https://stream.example.com/boca-river" }
 ```
 
 ## Estructura del proyecto
 
 ```
 Crud-Login/
-├── server.js          # Controller (+ Model en memoria)
+├── server.js          # Rutas, sesión y arranque
+├── controllers/       # Validación y lógica del CRUD
+├── models/            # Conexión y consultas a PostgreSQL
+├── db/schema.sql      # Tablas y datos de ejemplo
 ├── views/index.html   # Vista protegida (CRUD)
 ├── public/login.html  # Vista pública (login)
 ├── .env.example       # Plantilla de configuración (sin datos reales)
@@ -125,13 +135,11 @@ Crud-Login/
 
 ## Limitaciones y próximos pasos
 
-- Los datos viven en memoria: al reiniciar el servidor vuelven a los valores iniciales.
 - Hay un único usuario, definido en `.env`.
 
 Ideas para escalar:
 
-- Separar el controlador en carpetas (`models/`, `controllers/`, `routes/`).
-- Persistir los datos en una base de datos (SQLite, MySQL o PostgreSQL).
+- CRUD de países y ligas desde la interfaz.
 - Reemplazar MD5 por `bcrypt`, agregar registro de usuarios y roles.
 
 ## Autor

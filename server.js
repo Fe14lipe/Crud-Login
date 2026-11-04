@@ -15,15 +15,10 @@ if (!ADMIN_USER || !ADMIN_PASSWORD_HASH || !SESSION_SECRET) {
 const app = express();
 const md5 = (texto) => crypto.createHash('md5').update(texto).digest('hex');
 
-// ---------- MODEL (datos en memoria) ----------
+const Streams = require('./controllers/streams'); // los streams viven en PostgreSQL (models/)
 const users = [{ username: ADMIN_USER, password: ADMIN_PASSWORD_HASH }]; // la contraseña se guarda encriptada (MD5)
-let streams = [
-  { id: 1, title: 'Real Madrid vs Barcelona', league: 'La Liga', status: 'EN VIVO' },
-  { id: 2, title: 'Liverpool vs Man City', league: 'Premier League', status: 'PRÓXIMO' },
-];
-let nextId = 3;
 
-// ---------- Middlewares ----------
+// Middlewares 
 app.use(express.json());
 app.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }));
 
@@ -34,7 +29,7 @@ const requireAuth = (req, res, next) => {
   res.redirect('/login.html');
 };
 
-// ---------- Auth ----------
+// Auth 
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   const user = users.find((u) => u.username === username && u.password === md5(password || ''));
@@ -45,32 +40,17 @@ app.post('/api/login', (req, res) => {
 
 app.post('/api/logout', (req, res) => req.session.destroy(() => res.json({ ok: true })));
 
-// ---------- CRUD protegido ----------
-app.get('/api/streams', requireAuth, (req, res) => res.json(streams));
+// CRUD protegido (Express 4 no captura errores async: wrap -> 500 en vez de caer el servidor)
+const wrap = (fn) => (req, res) => fn(req, res).catch((e) => { console.error(e); res.status(500).json({ error: 'Error del servidor' }); });
 
-app.post('/api/streams', requireAuth, (req, res) => {
-  const { title, league, status } = req.body;
-  if (!title || !league || !status) return res.status(400).json({ error: 'Faltan datos' });
-  const stream = { id: nextId++, title, league, status };
-  streams.push(stream);
-  res.status(201).json(stream);
-});
+app.get('/api/paises', requireAuth, wrap(Streams.paises));
+app.get('/api/paises/:paisId/ligas', requireAuth, wrap(Streams.ligas)); // dropdown en cascada
+app.get('/api/streams', requireAuth, wrap(Streams.listar));
+app.post('/api/streams', requireAuth, wrap(Streams.crear));
+app.put('/api/streams/:id', requireAuth, wrap(Streams.actualizar));
+app.delete('/api/streams/:id', requireAuth, wrap(Streams.eliminar));
 
-app.put('/api/streams/:id', requireAuth, (req, res) => {
-  const stream = streams.find((s) => s.id === Number(req.params.id));
-  if (!stream) return res.status(404).json({ error: 'No existe' });
-  const { title, league, status } = req.body;
-  if (!title || !league || !status) return res.status(400).json({ error: 'Faltan datos' });
-  Object.assign(stream, { title, league, status });
-  res.json(stream);
-});
-
-app.delete('/api/streams/:id', requireAuth, (req, res) => {
-  streams = streams.filter((s) => s.id !== Number(req.params.id));
-  res.json({ ok: true });
-});
-
-// ---------- VIEWS ----------
+// VIEWS
 app.get('/', requireAuth, (req, res) => res.sendFile(path.join(__dirname, 'views', 'index.html')));
 app.get('/index.html', requireAuth, (req, res) => res.redirect('/'));
 app.use(express.static(path.join(__dirname, 'public'), { index: false })); // solo login.html es público
