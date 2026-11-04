@@ -33,6 +33,7 @@ Proyecto académico que aplica el patrón **MVC**, operaciones **CRUD** y **aute
   - Páginas: redirigen a `/login.html`.
   - API: responden `401 No autenticado`.
 - **CRUD de streams:** crear, leer, actualizar y eliminar partidos (título, país, liga, estado y URL de transmisión).
+- **Interfaz "cancha":** inicio con tarjetas de goleadores, tabla de posiciones y buscador, alimentados por los datos de la liga (`GET /api/liga`).
 - **Dropdowns en cascada:** al elegir el **país** se cargan solo las **ligas** de ese país (no se escribe ninguna clave foránea a mano).
 - **Validación en Back-End del dato sensible** (URL de transmisión): debe ser `https://` y única; título, estado y liga también se validan en el servidor antes de grabar. Las restricciones `UNIQUE`, `FOREIGN KEY` y `CHECK` de la BD son la última barrera.
 - **Contraseña encriptada** con hash MD5.
@@ -71,7 +72,7 @@ cd Crud-Login
 npm install
 ```
 
-2. Crear la base de datos en **pgAdmin 4**: clic derecho en *Databases → Create → Database* con el nombre `pomasqui_stream`; luego abrir *Query Tool*, cargar [`db/schema.sql`](db/schema.sql) y ejecutarlo (F5). Crea las tablas `paises`, `ligas`, `streams` y datos de ejemplo.
+2. Crear la base de datos en **pgAdmin 4**: clic derecho en *Databases → Create → Database* con el nombre `pomasqui_stream`; luego abrir *Query Tool*, cargar [`db/schema.sql`](db/schema.sql) y ejecutarlo (F5). Crea las tablas `paises`, `ligas`, `streams` y datos de ejemplo. Después ejecuta también [`db/liga.sql`](db/liga.sql): carga los equipos, la tabla de posiciones y los goleadores reales de la categoría MAXIMA de la [Liga Barrial de Pomasqui](https://pomasqui.sadcaftorneos.com/maxima/inicio).
 
 3. Crear el archivo de configuración a partir de la plantilla:
 
@@ -105,6 +106,7 @@ npm start
 |--------|------|--------|-----------|
 | POST | `/api/login` | Iniciar sesión | No |
 | POST | `/api/logout` | Cerrar sesión | No |
+| GET | `/api/liga` | Posiciones y goleadores de la liga | Sí |
 | GET | `/api/paises` | Listar países | Sí |
 | GET | `/api/paises/:id/ligas` | Ligas de un país (dropdown en cascada) | Sí |
 | GET | `/api/streams` | Listar streams | Sí |
@@ -126,6 +128,8 @@ Crud-Login/
 ├── controllers/       # Validación y lógica del CRUD
 ├── models/            # Conexión y consultas a PostgreSQL
 ├── db/schema.sql      # Tablas y datos de ejemplo
+├── db/liga.sql        # Datos de la liga (generado por el script)
+├── scripts/scrape-liga.js  # Descarga los datos de la liga y genera db/liga.sql
 ├── views/index.html   # Vista protegida (CRUD)
 ├── public/login.html  # Vista pública (login)
 ├── .env.example       # Plantilla de configuración (sin datos reales)
@@ -139,6 +143,7 @@ Crud-Login/
 
 Ideas para escalar:
 
+- Actualizar los datos de la liga: `node scripts/scrape-liga.js` y volver a ejecutar `db/liga.sql`. Solo se importan equipos, posiciones y goleadores (no sanciones disciplinarias).
 - CRUD de países y ligas desde la interfaz.
 - Reemplazar MD5 por `bcrypt`, agregar registro de usuarios y roles.
 

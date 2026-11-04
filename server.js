@@ -15,6 +15,7 @@ if (!ADMIN_USER || !ADMIN_PASSWORD_HASH || !SESSION_SECRET) {
 const app = express();
 const md5 = (texto) => crypto.createHash('md5').update(texto).digest('hex');
 
+const Liga = require('./controllers/liga');
 const Streams = require('./controllers/streams'); // los streams viven en PostgreSQL (models/)
 const users = [{ username: ADMIN_USER, password: ADMIN_PASSWORD_HASH }]; // la contraseña se guarda encriptada (MD5)
 
@@ -43,6 +44,7 @@ app.post('/api/logout', (req, res) => req.session.destroy(() => res.json({ ok: t
 // CRUD protegido (Express 4 no captura errores async: wrap -> 500 en vez de caer el servidor)
 const wrap = (fn) => (req, res) => fn(req, res).catch((e) => { console.error(e); res.status(500).json({ error: 'Error del servidor' }); });
 
+app.get('/api/liga', requireAuth, wrap(Liga.resumen));
 app.get('/api/paises', requireAuth, wrap(Streams.paises));
 app.get('/api/paises/:paisId/ligas', requireAuth, wrap(Streams.ligas)); // dropdown en cascada
 app.get('/api/streams', requireAuth, wrap(Streams.listar));
