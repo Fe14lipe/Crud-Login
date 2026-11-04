@@ -16,6 +16,8 @@ const app = express();
 const md5 = (texto) => crypto.createHash('md5').update(texto).digest('hex');
 
 const Liga = require('./controllers/liga');
+const Social = require('./controllers/social');
+const Jugadores = require('./controllers/jugadores');
 const Streams = require('./controllers/streams'); // los streams viven en PostgreSQL (models/)
 const users = [{ username: ADMIN_USER, password: ADMIN_PASSWORD_HASH }]; // la contraseña se guarda encriptada (MD5)
 
@@ -45,6 +47,23 @@ app.post('/api/logout', (req, res) => req.session.destroy(() => res.json({ ok: t
 const wrap = (fn) => (req, res) => fn(req, res).catch((e) => { console.error(e); res.status(500).json({ error: 'Error del servidor' }); });
 
 app.get('/api/liga', requireAuth, wrap(Liga.resumen));
+
+app.get('/api/yo', requireAuth, wrap(Social.yo));
+app.get('/api/publicaciones', requireAuth, wrap(Social.publicaciones));
+app.post('/api/publicaciones', requireAuth, wrap(Social.publicar));
+app.delete('/api/publicaciones/:id', requireAuth, wrap(Social.borrar));
+app.post('/api/publicaciones/:id/like', requireAuth, wrap(Social.like));
+app.get('/api/publicaciones/:id/comentarios', requireAuth, wrap(Social.comentarios));
+app.post('/api/publicaciones/:id/comentarios', requireAuth, wrap(Social.comentar));
+app.get('/api/equipos', requireAuth, wrap(Social.equipos));
+app.post('/api/equipos/:id/seguir', requireAuth, wrap(Social.seguir));
+app.get('/api/ligas/:ligaId/equipos', requireAuth, wrap(Jugadores.equiposDeLiga)); // dropdown en cascada
+app.get('/api/jugadores', requireAuth, wrap(Jugadores.listar));
+app.post('/api/jugadores', requireAuth, wrap(Jugadores.crear));
+app.put('/api/jugadores/:id', requireAuth, wrap(Jugadores.actualizar));
+app.delete('/api/jugadores/:id', requireAuth, wrap(Jugadores.eliminar));
+app.post('/api/jugadores/:id/guardar', requireAuth, wrap(Jugadores.guardar));
+
 app.get('/api/paises', requireAuth, wrap(Streams.paises));
 app.get('/api/paises/:paisId/ligas', requireAuth, wrap(Streams.ligas)); // dropdown en cascada
 app.get('/api/streams', requireAuth, wrap(Streams.listar));

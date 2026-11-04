@@ -33,7 +33,11 @@ Proyecto académico que aplica el patrón **MVC**, operaciones **CRUD** y **aute
   - Páginas: redirigen a `/login.html`.
   - API: responden `401 No autenticado`.
 - **CRUD de streams:** crear, leer, actualizar y eliminar partidos (título, país, liga, estado y URL de transmisión).
-- **Interfaz "cancha":** inicio con tarjetas de goleadores, tabla de posiciones y buscador, alimentados por los datos de la liga (`GET /api/liga`).
+- **Interfaz "Peloteros":** red social de fútbol barrial con perfil, tarjetas doradas de jugadores, publicaciones con marcador, buscador y menú lateral.
+  - **Red social funcional:** publicar, borrar tus publicaciones, me gusta, comentarios, seguir equipos y guardar jugadores (todo en PostgreSQL).
+  - **Explorar:** tabla de posiciones, goleadores y equipos reales de la Liga Barrial de Pomasqui.
+  - **Admin:** CRUD de jugadores (dropdowns en cascada País → Liga → Equipo) y de streams.
+- **Validación en Back-End del código del jugador:** 3 a 7 dígitos, único; edad, posición y valoraciones también se validan en el servidor.
 - **Dropdowns en cascada:** al elegir el **país** se cargan solo las **ligas** de ese país (no se escribe ninguna clave foránea a mano).
 - **Validación en Back-End del dato sensible** (URL de transmisión): debe ser `https://` y única; título, estado y liga también se validan en el servidor antes de grabar. Las restricciones `UNIQUE`, `FOREIGN KEY` y `CHECK` de la BD son la última barrera.
 - **Contraseña encriptada** con hash MD5.
@@ -72,7 +76,7 @@ cd Crud-Login
 npm install
 ```
 
-2. Crear la base de datos en **pgAdmin 4**: clic derecho en *Databases → Create → Database* con el nombre `pomasqui_stream`; luego abrir *Query Tool*, cargar [`db/schema.sql`](db/schema.sql) y ejecutarlo (F5). Crea las tablas `paises`, `ligas`, `streams` y datos de ejemplo. Después ejecuta también [`db/liga.sql`](db/liga.sql): carga los equipos, la tabla de posiciones y los goleadores reales de la categoría MAXIMA de la [Liga Barrial de Pomasqui](https://pomasqui.sadcaftorneos.com/maxima/inicio).
+2. Crear la base de datos en **pgAdmin 4**: clic derecho en *Databases → Create → Database* con el nombre `pomasqui_stream`; luego abrir *Query Tool*, cargar [`db/schema.sql`](db/schema.sql) y ejecutarlo (F5). Crea las tablas `paises`, `ligas`, `streams` y datos de ejemplo. Después ejecuta, en este orden, [`db/liga.sql`](db/liga.sql) y [`db/peloteros.sql`](db/peloteros.sql) (jugadores, publicaciones, me gusta, comentarios, equipos seguidos y guardados). El primero: carga los equipos, la tabla de posiciones y los goleadores reales de la categoría MAXIMA de la [Liga Barrial de Pomasqui](https://pomasqui.sadcaftorneos.com/maxima/inicio).
 
 3. Crear el archivo de configuración a partir de la plantilla:
 
@@ -107,12 +111,25 @@ npm start
 | POST | `/api/login` | Iniciar sesión | No |
 | POST | `/api/logout` | Cerrar sesión | No |
 | GET | `/api/liga` | Posiciones y goleadores de la liga | Sí |
+| GET | `/api/yo` | Perfil y contadores del usuario | Sí |
+| GET/POST | `/api/publicaciones` | Listar / publicar | Sí |
+| DELETE | `/api/publicaciones/:id` | Borrar una publicación propia | Sí |
+| POST | `/api/publicaciones/:id/like` | Me gusta (alterna) | Sí |
+| GET/POST | `/api/publicaciones/:id/comentarios` | Comentarios | Sí |
+| GET | `/api/equipos` | Equipos y si los sigues | Sí |
+| POST | `/api/equipos/:id/seguir` | Seguir / dejar de seguir (alterna) | Sí |
+| GET | `/api/ligas/:id/equipos` | Equipos de una liga (dropdown en cascada) | Sí |
+| GET/POST | `/api/jugadores` | Listar / crear jugadores | Sí |
+| PUT/DELETE | `/api/jugadores/:id` | Editar / eliminar jugador | Sí |
+| POST | `/api/jugadores/:id/guardar` | Guardar jugador (alterna) | Sí |
 | GET | `/api/paises` | Listar países | Sí |
 | GET | `/api/paises/:id/ligas` | Ligas de un país (dropdown en cascada) | Sí |
 | GET | `/api/streams` | Listar streams | Sí |
 | POST | `/api/streams` | Crear stream | Sí |
 | PUT | `/api/streams/:id` | Actualizar stream | Sí |
 | DELETE | `/api/streams/:id` | Eliminar stream | Sí |
+
+> Los jugadores de demostración (Mateo Ruiz, Johan Mina…) y sus valoraciones son ilustrativos, no personas reales. Los resultados de las publicaciones de ejemplo sí son reales (segunda etapa, fecha 7).
 
 Cuerpo de un stream:
 
@@ -128,6 +145,7 @@ Crud-Login/
 ├── controllers/       # Validación y lógica del CRUD
 ├── models/            # Conexión y consultas a PostgreSQL
 ├── db/schema.sql      # Tablas y datos de ejemplo
+├── db/peloteros.sql   # Jugadores y red social
 ├── db/liga.sql        # Datos de la liga (generado por el script)
 ├── scripts/scrape-liga.js  # Descarga los datos de la liga y genera db/liga.sql
 ├── views/index.html   # Vista protegida (CRUD)

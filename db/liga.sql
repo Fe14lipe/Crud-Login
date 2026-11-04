@@ -46,6 +46,7 @@ INSERT INTO equipos (nombre, sigla, fundado, liga_id) VALUES
 INSERT INTO posiciones (equipo_id, etapa, pj, pg, pe, pp, gf, gc, pts) VALUES
   ((SELECT id FROM equipos WHERE nombre = 'Aston F.C.'), 'Segunda Etapa', 7, 6, 0, 1, 28, 15, 18),
   ((SELECT id FROM equipos WHERE nombre = 'Manabí F.C.'), 'Segunda Etapa', 7, 5, 1, 1, 30, 14, 16),
+  ((SELECT id FROM equipos WHERE nombre = '11 05 Olmedo'), 'Segunda Etapa', 7, 5, 0, 2, 37, 29, 15),
   ((SELECT id FROM equipos WHERE nombre = 'F.C. Old Soccer'), 'Segunda Etapa', 6, 4, 1, 1, 21, 9, 13),
   ((SELECT id FROM equipos WHERE nombre = 'Técnico Santa Rosa'), 'Segunda Etapa', 6, 4, 0, 2, 31, 22, 12),
   ((SELECT id FROM equipos WHERE nombre = 'Inter Lunas'), 'Segunda Etapa', 7, 3, 1, 3, 21, 22, 10),
@@ -56,6 +57,7 @@ INSERT INTO posiciones (equipo_id, etapa, pj, pg, pe, pp, gf, gc, pts) VALUES
   ((SELECT id FROM equipos WHERE nombre = 'Atlético Boca Junior'), 'Segunda Etapa', 7, 1, 0, 6, 22, 27, 3),
   ((SELECT id FROM equipos WHERE nombre = 'C.D. Family'), 'Segunda Etapa', 5, 0, 0, 5, 25, 42, 0),
   ((SELECT id FROM equipos WHERE nombre = 'Manabí F.C.'), 'Primera Etapa', 11, 8, 1, 2, 68, 34, 25),
+  ((SELECT id FROM equipos WHERE nombre = '11 05 Olmedo'), 'Primera Etapa', 11, 8, 0, 3, 72, 35, 24),
   ((SELECT id FROM equipos WHERE nombre = 'F.C. Old Soccer'), 'Primera Etapa', 11, 8, 0, 3, 52, 17, 24),
   ((SELECT id FROM equipos WHERE nombre = 'Independiente Junior SL'), 'Primera Etapa', 11, 8, 0, 3, 58, 38, 24),
   ((SELECT id FROM equipos WHERE nombre = 'Inter Lunas'), 'Primera Etapa', 11, 6, 2, 3, 44, 23, 20),
@@ -63,16 +65,17 @@ INSERT INTO posiciones (equipo_id, etapa, pj, pg, pe, pp, gf, gc, pts) VALUES
   ((SELECT id FROM equipos WHERE nombre = 'Santos S.P'), 'Primera Etapa', 11, 3, 3, 5, 30, 39, 12),
   ((SELECT id FROM equipos WHERE nombre = 'Atlético Boca Junior'), 'Primera Etapa', 11, 3, 1, 7, 32, 63, 10),
   ((SELECT id FROM equipos WHERE nombre = 'La Florida'), 'Primera Etapa', 11, 3, 0, 8, 24, 48, 9),
-  ((SELECT id FROM equipos WHERE nombre = 'Aston F.C.'), 'Primera Etapa', 18, 6, 0, 1, 86, 40, 46),
-  ((SELECT id FROM equipos WHERE nombre = 'Manabí F.C.'), 'Primera Etapa', 18, 13, 2, 3, 98, 48, 41),
-  ((SELECT id FROM equipos WHERE nombre = 'F.C. Old Soccer'), 'Primera Etapa', 17, 12, 1, 4, 73, 26, 37),
-  ((SELECT id FROM equipos WHERE nombre = 'C.D. Vasco'), 'Primera Etapa', 17, 3, 1, 2, 55, 25, 35),
-  ((SELECT id FROM equipos WHERE nombre = 'Técnico Santa Rosa'), 'Primera Etapa', 17, 10, 1, 6, 76, 49, 31),
-  ((SELECT id FROM equipos WHERE nombre = 'Independiente Junior SL'), 'Primera Etapa', 17, 10, 1, 6, 82, 69, 31),
-  ((SELECT id FROM equipos WHERE nombre = 'Inter Lunas'), 'Primera Etapa', 18, 9, 3, 6, 65, 45, 30),
-  ((SELECT id FROM equipos WHERE nombre = 'Santos S.P'), 'Primera Etapa', 18, 5, 3, 10, 52, 71, 18),
-  ((SELECT id FROM equipos WHERE nombre = 'Atlético Boca Junior'), 'Primera Etapa', 18, 4, 1, 13, 54, 90, 13),
-  ((SELECT id FROM equipos WHERE nombre = 'La Florida'), 'Primera Etapa', 18, 4, 1, 13, 46, 87, 13);
+  ((SELECT id FROM equipos WHERE nombre = 'Aston F.C.'), 'Tabla Acumulada', 18, 6, 0, 1, 86, 40, 46),
+  ((SELECT id FROM equipos WHERE nombre = 'Manabí F.C.'), 'Tabla Acumulada', 18, 13, 2, 3, 98, 48, 41),
+  ((SELECT id FROM equipos WHERE nombre = '11 05 Olmedo'), 'Tabla Acumulada', 18, 13, 0, 5, 109, 64, 39),
+  ((SELECT id FROM equipos WHERE nombre = 'F.C. Old Soccer'), 'Tabla Acumulada', 17, 12, 1, 4, 73, 26, 37),
+  ((SELECT id FROM equipos WHERE nombre = 'C.D. Vasco'), 'Tabla Acumulada', 17, 3, 1, 2, 55, 25, 35),
+  ((SELECT id FROM equipos WHERE nombre = 'Técnico Santa Rosa'), 'Tabla Acumulada', 17, 10, 1, 6, 76, 49, 31),
+  ((SELECT id FROM equipos WHERE nombre = 'Independiente Junior SL'), 'Tabla Acumulada', 17, 10, 1, 6, 82, 69, 31),
+  ((SELECT id FROM equipos WHERE nombre = 'Inter Lunas'), 'Tabla Acumulada', 18, 9, 3, 6, 65, 45, 30),
+  ((SELECT id FROM equipos WHERE nombre = 'Santos S.P'), 'Tabla Acumulada', 18, 5, 3, 10, 52, 71, 18),
+  ((SELECT id FROM equipos WHERE nombre = 'Atlético Boca Junior'), 'Tabla Acumulada', 18, 4, 1, 13, 54, 90, 13),
+  ((SELECT id FROM equipos WHERE nombre = 'La Florida'), 'Tabla Acumulada', 18, 4, 1, 13, 46, 87, 13);
 
 INSERT INTO goleadores (codigo, nombre, equipo_id, goles) VALUES
   (1922, 'Roque Marquez', (SELECT id FROM equipos WHERE nombre = 'Manabí F.C.'), 35),

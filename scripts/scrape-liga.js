@@ -29,14 +29,16 @@ const q = (s) => `'${String(s).replace(/'/g, "''")}'`; // escapa comillas para S
   // Posiciones: dos tablas (Segunda y Primera etapa) con 10 columnas numéricas por equipo
   const pos = await bajar('tabla-posiciones');
   const filas = [];
-  for (const etapa of ['Segunda Etapa', 'Primera Etapa']) {
+  const ETAPAS = ['Segunda Etapa', 'Primera Etapa', 'Tabla Acumulada'];
+  ETAPAS.forEach((etapa, i) => {
     const ini = pos.indexOf(etapa);
-    const fin = etapa === 'Segunda Etapa' ? pos.indexOf('Primera Etapa') : pos.length;
-    for (const m of pos.slice(ini, fin).matchAll(/\|(\d+)\|([^|\d][^|]*)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(-?\d+)\|(\d+)(?=\|)/g)) {
+    if (ini < 0) throw new Error(`No se encontró "${etapa}" (¿cambió el sitio?)`);
+    const fin = i + 1 < ETAPAS.length ? pos.indexOf(ETAPAS[i + 1]) : pos.length; // cada tabla termina donde empieza la siguiente
+    for (const m of pos.slice(ini, fin).matchAll(/\|(\d+)\|([^|]*[A-Za-zÀ-ÿ][^|]*)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(\d+)\|(-?\d+)\|(\d+)(?=\|)/g)) {
       const [, , nombre, pj, pg, pe, pp, gf, gc, , , pts] = m;
       filas.push({ etapa, nombre, pj, pg, pe, pp, gf, gc, pts });
     }
-  }
+  });
 
   // Goleadores: "Nº1|Equipo|Cod. 1922|Nombre |*FOR|35|goles"
   const gol = await bajar('goleadores');
