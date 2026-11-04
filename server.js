@@ -23,7 +23,9 @@ const users = [{ username: ADMIN_USER, password: ADMIN_PASSWORD_HASH }]; // la c
 
 // Middlewares 
 app.use(express.json());
-app.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }));
+const prod = process.env.NODE_ENV === 'production';
+if (prod) app.set('trust proxy', 1); // detrás del proxy HTTPS de Render
+app.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false, cookie: { httpOnly: true, sameSite: 'lax', secure: prod } }));
 
 // Protege rutas: sin sesión -> 401 (API) o redirige al login (páginas)
 const requireAuth = (req, res, next) => {

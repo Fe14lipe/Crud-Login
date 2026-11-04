@@ -16,6 +16,7 @@ Proyecto académico que aplica el patrón **MVC**, operaciones **CRUD** y **aute
 - [Arquitectura MVC](#arquitectura-mvc)
 - [Tecnologías](#tecnologías)
 - [Cómo abrir y ejecutar](#cómo-abrir-y-ejecutar)
+- [Deploy en Render](#deploy-en-render)
 - [Autenticación](#autenticación)
 - [API REST](#api-rest)
 - [Estructura del proyecto](#estructura-del-proyecto)
@@ -95,6 +96,19 @@ npm start
 6. Abrir <http://localhost:3000> en el navegador. Sin sesión, te redirige al login.
 
 > El archivo `.env` está en `.gitignore` y nunca se sube al repositorio.
+
+## Deploy en Render
+
+1. Subir el repositorio a GitHub.
+2. En [Render](https://render.com): **New → PostgreSQL** (plan gratuito). Copiar la *External Database URL*.
+3. Cargar los datos desde pgAdmin: *Register → Server* con los datos de la base de Render (SSL en *require*) y ejecutar `db/schema.sql`, `db/liga.sql` y `db/peloteros.sql` en ese orden.
+4. **New → Web Service**, conectar el repositorio y configurar:
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+   - Variables de entorno: `NODE_ENV=production`, `DATABASE_URL` (la de Render; se prefiere la *Internal Database URL*), `ADMIN_USER`, `ADMIN_PASSWORD_HASH` y `SESSION_SECRET`.
+5. Al terminar el deploy, abrir la URL `https://<tu-servicio>.onrender.com`.
+
+> En el plan gratuito el servicio se duerme tras unos minutos sin uso y la primera visita tarda en responder.
 
 ## Autenticación
 
