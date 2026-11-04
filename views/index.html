@@ -313,7 +313,6 @@
     <div class="sec"><h2>Administrar jugadores</h2></div>
     <div class="box panel">
       <form class="admin" id="fJ">
-        <input id="jCodigo" inputmode="numeric" placeholder="Código del jugador" required>
         <input id="jNombre" placeholder="Nombre completo" required>
         <select id="jPais" required></select>
         <select id="jLiga" required><option value="">Liga...</option></select>
@@ -443,14 +442,14 @@
 
   async function guardarJ(e) {
     e.preventDefault();
-    const body = { codigo: $('jCodigo').value, nombre: $('jNombre').value, posicion: $('jPos').value, edad: $('jEdad').value,
+    const body = { nombre: $('jNombre').value, posicion: $('jPos').value, edad: $('jEdad').value,
       ritmo: $('jRitmo').value, tiro: $('jTiro').value, pase: $('jPase').value, equipo_id: $('jEquipo').value, disponible: $('jDisp').checked };
     try { await api(editJ ? `/api/jugadores/${editJ}` : '/api/jugadores', { method: editJ ? 'PUT' : 'POST', headers: J, body: JSON.stringify(body) }, $('errJ')); }
     catch { return; }
     editJ = null; refrescar();
   }
   async function rellenarJ(j) {
-    $('jCodigo').value = j.codigo; $('jNombre').value = j.nombre; $('jPos').value = j.posicion; $('jEdad').value = j.edad;
+    $('jNombre').value = j.nombre; $('jPos').value = j.posicion; $('jEdad').value = j.edad;
     $('jRitmo').value = j.ritmo; $('jTiro').value = j.tiro; $('jPase').value = j.pase; $('jDisp').checked = j.disponible;
     $('jPais').value = j.pais_id; await llenarLigas($('jLiga'), j.pais_id, j.liga_id); await llenarEquipos(j.liga_id, j.equipo_id);
   }

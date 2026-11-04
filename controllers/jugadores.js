@@ -4,15 +4,14 @@ const Jugador = require('../models/jugadores');
 const POSICIONES = ['POR', 'DFC', 'LD', 'LI', 'MCD', 'MC', 'MCO', 'ED', 'EI', 'DC'];
 const entre = (n, min, max) => Number.isInteger(n) && n >= min && n <= max;
 
-// El código del jugador es el dato sensible: se valida aquí, no solo en el navegador.
-// (El navegador puede saltarse con DevTools o curl; la BD además lo protege con UNIQUE y CHECK.)
+// Todo se valida aquí, no solo en el navegador (DevTools o curl pueden saltarse el JS);
+// además la BD protege con CHECK y FOREIGN KEY. El código del jugador lo genera la BD (identity).
 function validar(b) {
   const d = {
-    codigo: Number(b.codigo), nombre: String(b.nombre ?? '').trim(), posicion: b.posicion,
+    nombre: String(b.nombre ?? '').trim(), posicion: b.posicion,
     edad: Number(b.edad), ritmo: Number(b.ritmo), tiro: Number(b.tiro), pase: Number(b.pase),
     equipo_id: Number(b.equipo_id), disponible: b.disponible === true || b.disponible === 'true',
   };
-  if (!/^\d{3,7}$/.test(String(b.codigo ?? '').trim())) return { error: 'El código debe ser numérico, de 3 a 7 dígitos' };
   if (d.nombre.length < 3 || d.nombre.length > 80) return { error: 'El nombre debe tener entre 3 y 80 caracteres' };
   if (!POSICIONES.includes(d.posicion)) return { error: 'Posición inválida' };
   if (!entre(d.edad, 14, 60)) return { error: 'La edad debe estar entre 14 y 60' };
@@ -22,7 +21,6 @@ function validar(b) {
 }
 
 const manejarError = (res, e) => {
-  if (e.code === '23505') return res.status(409).json({ error: 'Ya existe un jugador con ese código' });
   if (e.code === '23503') return res.status(400).json({ error: 'El equipo seleccionado no existe' });
   throw e; // lo atrapa wrap() en server.js -> 500
 };

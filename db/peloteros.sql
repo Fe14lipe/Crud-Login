@@ -4,8 +4,8 @@ DROP TABLE IF EXISTS comentarios, likes, guardados, seguidos, publicaciones, jug
 
 CREATE TABLE jugadores (
   id         SERIAL PRIMARY KEY,
-  codigo     INT NOT NULL UNIQUE CHECK (codigo BETWEEN 100 AND 9999999), -- dato sensible: código único del jugador
-  nombre     VARCHAR(80) NOT NULL,
+  codigo     INT GENERATED ALWAYS AS IDENTITY (START WITH 1000) UNIQUE, -- código autogenerado, no se escribe a mano
+  nombre     VARCHAR(80) NOT NULL,  
   posicion   VARCHAR(3) NOT NULL CHECK (posicion IN ('POR','DFC','LD','LI','MCD','MC','MCO','ED','EI','DC')),
   edad       INT NOT NULL CHECK (edad BETWEEN 14 AND 60),
   ritmo      INT NOT NULL CHECK (ritmo BETWEEN 1 AND 99),
@@ -52,13 +52,13 @@ CREATE TABLE guardados (
 );
 
 -- Jugadores de demostración (perfiles y valoraciones ilustrativos, no son personas reales)
-INSERT INTO jugadores (codigo, nombre, posicion, edad, ritmo, tiro, pase, equipo_id) VALUES
-  (90001, 'Mateo Ruiz',    'DC', 18, 88, 84, 76, (SELECT id FROM equipos WHERE nombre = 'Aston F.C.')),
-  (90002, 'Johan Mina',    'EI', 19, 92, 78, 81, (SELECT id FROM equipos WHERE nombre = 'Manabí F.C.')),
-  (90003, 'Nicolás Vera',  'MC', 17, 78, 75, 89, (SELECT id FROM equipos WHERE nombre = 'F.C. Old Soccer')),
-  (90004, 'Kevin Ortiz',   'LD', 20, 85, 66, 79, (SELECT id FROM equipos WHERE nombre = 'Inter Lunas')),
-  (90005, 'Dylan Paredes', 'MCO', 18, 80, 83, 86, (SELECT id FROM equipos WHERE nombre = '11 05 Olmedo')),
-  (90006, 'Bryan Chiluisa','DFC', 21, 70, 55, 72, (SELECT id FROM equipos WHERE nombre = 'Técnico Santa Rosa'));
+INSERT INTO jugadores (nombre, posicion, edad, ritmo, tiro, pase, equipo_id) VALUES
+  ('Mateo Ruiz',    'DC', 18, 88, 84, 76, (SELECT id FROM equipos WHERE nombre = 'Aston F.C.')),
+  ('Johan Mina',    'EI', 19, 92, 78, 81, (SELECT id FROM equipos WHERE nombre = 'Manabí F.C.')),
+  ('Nicolás Vera',  'MC', 17, 78, 75, 89, (SELECT id FROM equipos WHERE nombre = 'F.C. Old Soccer')),
+  ('Kevin Ortiz',   'LD', 20, 85, 66, 79, (SELECT id FROM equipos WHERE nombre = 'Inter Lunas')),
+  ('Dylan Paredes', 'MCO', 18, 80, 83, 86, (SELECT id FROM equipos WHERE nombre = '11 05 Olmedo')),
+  ('Bryan Chiluisa','DFC', 21, 70, 55, 72, (SELECT id FROM equipos WHERE nombre = 'Técnico Santa Rosa'));
 
 -- Publicaciones de clubes con resultados reales (Segunda Etapa, Fecha 7)
 INSERT INTO publicaciones (autor, equipo_id, texto, local_nombre, local_goles, visita_nombre, visita_goles, pie, creado_en) VALUES

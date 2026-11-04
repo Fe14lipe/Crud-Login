@@ -38,7 +38,7 @@ Proyecto académico que aplica el patrón **MVC**, operaciones **CRUD** y **aute
   - **Red social funcional:** publicar, borrar tus publicaciones, me gusta, comentarios, seguir equipos y guardar jugadores (todo en PostgreSQL).
   - **Explorar:** tabla de posiciones, goleadores y equipos reales de la Liga Barrial de Pomasqui.
   - **Admin:** CRUD de jugadores (dropdowns en cascada País → Liga → Equipo) y de streams.
-- **Validación en Back-End del código del jugador:** 3 a 7 dígitos, único; edad, posición y valoraciones también se validan en el servidor.
+- **Código de jugador autogenerado** (`IDENTITY` de PostgreSQL): no se escribe a mano. Los demás datos del jugador (nombre, posición, edad, valoraciones y equipo) también se validan en el servidor.
 - **Dropdowns en cascada:** al elegir el **país** se cargan solo las **ligas** de ese país (no se escribe ninguna clave foránea a mano).
 - **Validación en Back-End del dato sensible** (URL de transmisión): debe ser `https://` y única; título, estado y liga también se validan en el servidor antes de grabar. Las restricciones `UNIQUE`, `FOREIGN KEY` y `CHECK` de la BD son la última barrera.
 - **Contraseña encriptada** con hash MD5.

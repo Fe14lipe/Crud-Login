@@ -14,11 +14,12 @@ exports.listar = (usuario) => q(`${SELECT} ORDER BY media DESC, j.nombre`, [usua
 exports.obtener = async (id, usuario) => (await q(`${SELECT} WHERE j.id = $2`, [usuario, id]))[0];
 exports.equiposDeLiga = (ligaId) => q('SELECT id, nombre FROM equipos WHERE liga_id = $1 ORDER BY nombre', [ligaId]);
 
-const COLS = ['codigo', 'nombre', 'posicion', 'edad', 'ritmo', 'tiro', 'pase', 'equipo_id', 'disponible'];
+// el código (identity) lo genera la base de datos: nunca se inserta ni se actualiza desde la app
+const COLS = ['nombre', 'posicion', 'edad', 'ritmo', 'tiro', 'pase', 'equipo_id', 'disponible'];
 
 exports.crear = async (d, usuario) => {
   const [{ id }] = await q(
-    `INSERT INTO jugadores (${COLS}) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`, COLS.map((c) => d[c]));
+    `INSERT INTO jugadores (${COLS}) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`, COLS.map((c) => d[c]));
   return exports.obtener(id, usuario);
 };
 
