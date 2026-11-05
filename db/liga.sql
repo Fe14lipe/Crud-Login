@@ -43,14 +43,24 @@ INSERT INTO equipos (nombre, sigla, fundado, liga_id) VALUES
   ('Santos S.P', 'SSP', '2012-11-01', (SELECT id FROM ligas WHERE nombre = 'Liga Deportiva Barrial Pomasqui')),
   ('Técnico Santa Rosa', 'TSR', '1979-06-08', (SELECT id FROM ligas WHERE nombre = 'Liga Deportiva Barrial Pomasqui'));
 
--- Equipos de ejemplo de la LigaPro (para que el desplegable País > Liga > Equipo funcione también ahí)
+-- Equipos de la LigaPro Serie A 2026 (para que el desplegable País > Liga > Equipo funcione también ahí)
 INSERT INTO equipos (nombre, sigla, fundado, liga_id) VALUES
+  ('Aucas', 'AUC', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
   ('Barcelona SC', 'BSC', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Delfín SC', 'DEL', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Deportivo Cuenca', 'CUE', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
   ('Emelec', 'EME', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
-  ('Liga de Quito', 'LDU', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Guayaquil City', 'GCY', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
   ('Independiente del Valle', 'IDV', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
-  ('El Nacional', 'ELN', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
-  ('Aucas', 'AUC', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro'));
+  ('Leones FC', 'LEO', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('LDU Quito', 'LDU', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Macará', 'MAC', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Manta FC', 'MAN', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Libertad', 'LIB', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Mushuc Runa', 'MUS', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Orense SC', 'ORE', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Técnico Universitario', 'TEC', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Universidad Católica', 'UCA', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro'));
 
 INSERT INTO posiciones (equipo_id, etapa, pj, pg, pe, pp, gf, gc, pts) VALUES
   ((SELECT id FROM equipos WHERE nombre = 'Aston F.C.'), 'Segunda Etapa', 7, 6, 0, 1, 28, 15, 18),

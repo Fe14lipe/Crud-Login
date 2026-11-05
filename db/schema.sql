@@ -31,4 +31,4 @@ INSERT INTO ligas (nombre, pais_id) VALUES ('LigaPro', 1);
 
 INSERT INTO streams (titulo, liga_id, estado, url) VALUES
   ('Barcelona SC vs Emelec',                   1, 'EN VIVO', 'https://stream.example.com/clasico-del-astillero'),
-  ('Liga de Quito vs Independiente del Valle', 1, 'PRÓXIMO', 'https://stream.example.com/ldu-idv');
+  ('LDU Quito vs Independiente del Valle',     1, 'PRÓXIMO', 'https://stream.example.com/ldu-idv');

@@ -18,8 +18,11 @@ const bajar = async (p) => {
   if (!r.ok) throw new Error(`${p}: HTTP ${r.status}`);
   return texto(await r.text());
 };
-// Equipos de ejemplo de LigaPro (no vienen del sitio de la liga barrial)
-const LIGAPRO = [['Barcelona SC', 'BSC'], ['Emelec', 'EME'], ['Liga de Quito', 'LDU'], ['Independiente del Valle', 'IDV'], ['El Nacional', 'ELN'], ['Aucas', 'AUC']];
+// Los 16 equipos de la LigaPro Serie A 2026 (no vienen del sitio de la liga barrial)
+const LIGAPRO = [['Aucas', 'AUC'], ['Barcelona SC', 'BSC'], ['Delfín SC', 'DEL'], ['Deportivo Cuenca', 'CUE'], ['Emelec', 'EME'],
+  ['Guayaquil City', 'GCY'], ['Independiente del Valle', 'IDV'], ['Leones FC', 'LEO'], ['LDU Quito', 'LDU'], ['Macará', 'MAC'],
+  ['Manta FC', 'MAN'], ['Libertad', 'LIB'], ['Mushuc Runa', 'MUS'], ['Orense SC', 'ORE'], ['Técnico Universitario', 'TEC'],
+  ['Universidad Católica', 'UCA']];
 const q = (s) => `'${String(s).replace(/'/g, "''")}'`; // escapa comillas para SQL
 
 (async () => {
@@ -93,7 +96,7 @@ INSERT INTO ligas (nombre, pais_id) VALUES ('Liga Deportiva Barrial Pomasqui', (
 INSERT INTO equipos (nombre, sigla, fundado, liga_id) VALUES
 ${equipos.map((e) => `  (${q(e.nombre)}, ${q(e.sigla)}, ${q(e.fundado)}, (SELECT id FROM ligas WHERE nombre = 'Liga Deportiva Barrial Pomasqui'))`).join(',\n')};
 
--- Equipos de ejemplo de la LigaPro (para que el desplegable País > Liga > Equipo funcione también ahí)
+-- Equipos de la LigaPro Serie A 2026 (para que el desplegable País > Liga > Equipo funcione también ahí)
 INSERT INTO equipos (nombre, sigla, fundado, liga_id) VALUES
 ${LIGAPRO.map(([n, s]) => `  (${q(n)}, ${q(s)}, NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro'))`).join(',\n')};
 
