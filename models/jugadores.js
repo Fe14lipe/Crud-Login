@@ -4,7 +4,7 @@ const db = require('./db');
 const q = async (sql, params) => (await db.query(sql, params)).rows;
 
 const SELECT = `
-  SELECT j.id, j.codigo, j.nombre, j.posicion, j.edad, j.ritmo, j.tiro, j.pase, j.disponible,
+  SELECT j.id, j.codigo, j.cedula, j.nombre, j.posicion, j.edad, j.ritmo, j.tiro, j.pase, j.disponible,
          ROUND((j.ritmo + j.tiro + j.pase) / 3.0)::int AS media,
          e.id AS equipo_id, e.nombre AS equipo, e.sigla, l.id AS liga_id, l.pais_id,
          EXISTS (SELECT 1 FROM guardados g WHERE g.jugador_id = j.id AND g.usuario = $1) AS guardado
@@ -15,11 +15,11 @@ exports.obtener = async (id, usuario) => (await q(`${SELECT} WHERE j.id = $2`, [
 exports.equiposDeLiga = (ligaId) => q('SELECT id, nombre FROM equipos WHERE liga_id = $1 ORDER BY nombre', [ligaId]);
 
 // el código (identity) lo genera la base de datos: nunca se inserta ni se actualiza desde la app
-const COLS = ['nombre', 'posicion', 'edad', 'ritmo', 'tiro', 'pase', 'equipo_id', 'disponible'];
+const COLS = ['cedula', 'nombre', 'posicion', 'edad', 'ritmo', 'tiro', 'pase', 'equipo_id', 'disponible'];
 
 exports.crear = async (d, usuario) => {
   const [{ id }] = await q(
-    `INSERT INTO jugadores (${COLS}) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`, COLS.map((c) => d[c]));
+    `INSERT INTO jugadores (${COLS}) VALUES (${COLS.map((_, i) => `$${i + 1}`)}) RETURNING id`, COLS.map((c) => d[c]));
   return exports.obtener(id, usuario);
 };
 

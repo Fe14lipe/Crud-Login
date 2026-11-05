@@ -5,7 +5,10 @@ DROP TABLE IF EXISTS comentarios, likes, guardados, seguidos, publicaciones, jug
 CREATE TABLE jugadores (
   id         SERIAL PRIMARY KEY,
   codigo     INT GENERATED ALWAYS AS IDENTITY (START WITH 1000) UNIQUE, -- código autogenerado, no se escribe a mano
-  nombre     VARCHAR(80) NOT NULL,  
+  nombre     VARCHAR(80) NOT NULL,
+  -- DATO SENSIBLE: la cédula se valida en el back-end (algoritmo módulo 10) antes de grabar.
+  -- Es opcional solo para los jugadores de demostración (no se inventan cédulas); la app la exige al crear o editar.
+  cedula     VARCHAR(10) UNIQUE CHECK (cedula ~ '^[0-9]{10}$'),
   posicion   VARCHAR(3) NOT NULL CHECK (posicion IN ('POR','DFC','LD','LI','MCD','MC','MCO','ED','EI','DC')),
   edad       INT NOT NULL CHECK (edad BETWEEN 14 AND 60),
   ritmo      INT NOT NULL CHECK (ritmo BETWEEN 1 AND 99),

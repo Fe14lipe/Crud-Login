@@ -1,5 +1,6 @@
 // CONTROLLER: CRUD de jugadores con validación en BACK-END
 const Jugador = require('../models/jugadores');
+const { cedulaValida } = require('./cedula');
 
 const POSICIONES = ['POR', 'DFC', 'LD', 'LI', 'MCD', 'MC', 'MCO', 'ED', 'EI', 'DC'];
 const entre = (n, min, max) => Number.isInteger(n) && n >= min && n <= max;
@@ -8,10 +9,12 @@ const entre = (n, min, max) => Number.isInteger(n) && n >= min && n <= max;
 // además la BD protege con CHECK y FOREIGN KEY. El código del jugador lo genera la BD (identity).
 function validar(b) {
   const d = {
-    nombre: String(b.nombre ?? '').trim(), posicion: b.posicion,
+    cedula: String(b.cedula ?? '').trim(), nombre: String(b.nombre ?? '').trim(), posicion: b.posicion,
     edad: Number(b.edad), ritmo: Number(b.ritmo), tiro: Number(b.tiro), pase: Number(b.pase),
     equipo_id: Number(b.equipo_id), disponible: b.disponible === true || b.disponible === 'true',
   };
+  // DATO SENSIBLE: la cédula se valida SOLO aquí (formato + dígito verificador), antes de grabar en la BD
+  if (!cedulaValida(d.cedula)) return { error: 'Cédula inválida: debe ser una cédula ecuatoriana de 10 dígitos con dígito verificador correcto' };
   if (d.nombre.length < 3 || d.nombre.length > 80) return { error: 'El nombre debe tener entre 3 y 80 caracteres' };
   if (!POSICIONES.includes(d.posicion)) return { error: 'Posición inválida' };
   if (!entre(d.edad, 14, 60)) return { error: 'La edad debe estar entre 14 y 60' };
@@ -21,6 +24,7 @@ function validar(b) {
 }
 
 const manejarError = (res, e) => {
+  if (e.code === '23505') return res.status(409).json({ error: 'Ya existe un jugador con esa cédula' });
   if (e.code === '23503') return res.status(400).json({ error: 'El equipo seleccionado no existe' });
   throw e; // lo atrapa wrap() en server.js -> 500
 };

@@ -309,10 +309,14 @@
     return `<div class="sec"><h2>Jugadores guardados</h2></div><div class="cards">${l.map((j) => carta(j)).join('') || '<p class="vacio">Aún no guardas jugadores. Usa ☆ en una tarjeta.</p>'}</div>`;
   };
 
+  // La cédula es un dato sensible: en la tabla solo se muestran los 2 primeros y los 2 últimos dígitos
+  const mascara = (c) => (c ? `${esc(c.slice(0, 2))}••••••${esc(c.slice(-2))}` : '—');
+
   const vAdmin = () => `
     <div class="sec"><h2>Administrar jugadores</h2></div>
     <div class="box panel">
       <form class="admin" id="fJ">
+        <input id="jCedula" inputmode="numeric" maxlength="10" placeholder="Cédula (10 dígitos)" required autocomplete="off">
         <input id="jNombre" placeholder="Nombre completo" required>
         <select id="jPais" required></select>
         <select id="jLiga" required><option value="">Liga...</option></select>
@@ -326,8 +330,8 @@
         <button class="btn-p" id="jSave">${editJ ? 'Guardar cambios' : 'Agregar jugador'}</button>
       </form>
       <p class="err" id="errJ"></p>
-      <table><thead><tr><th>Cód.</th><th>Jugador</th><th>Equipo</th><th>Pos</th><th class="c">Edad</th><th class="c">Media</th><th></th></tr></thead>
-        <tbody>${jugadores.map((j) => `<tr><td>${j.codigo}</td><td>${esc(j.nombre)}</td><td>${esc(j.equipo)}</td><td>${esc(j.posicion)}</td><td class="c">${j.edad}</td><td class="c pts">${j.media}</td>
+      <table><thead><tr><th>Cód.</th><th>Cédula</th><th>Jugador</th><th>Equipo</th><th>Pos</th><th class="c">Edad</th><th class="c">Media</th><th></th></tr></thead>
+        <tbody>${jugadores.map((j) => `<tr><td>${j.codigo}</td><td>${mascara(j.cedula)}</td><td>${esc(j.nombre)}</td><td>${esc(j.equipo)}</td><td>${esc(j.posicion)}</td><td class="c">${j.edad}</td><td class="c pts">${j.media}</td>
           <td><button onclick="editarJ(${j.id})">Editar</button> <button class="del" onclick="borrarJ(${j.id})">Eliminar</button></td></tr>`).join('')}</tbody></table>
     </div>
 
@@ -442,14 +446,14 @@
 
   async function guardarJ(e) {
     e.preventDefault();
-    const body = { nombre: $('jNombre').value, posicion: $('jPos').value, edad: $('jEdad').value,
+    const body = { cedula: $('jCedula').value, nombre: $('jNombre').value, posicion: $('jPos').value, edad: $('jEdad').value,
       ritmo: $('jRitmo').value, tiro: $('jTiro').value, pase: $('jPase').value, equipo_id: $('jEquipo').value, disponible: $('jDisp').checked };
     try { await api(editJ ? `/api/jugadores/${editJ}` : '/api/jugadores', { method: editJ ? 'PUT' : 'POST', headers: J, body: JSON.stringify(body) }, $('errJ')); }
     catch { return; }
     editJ = null; refrescar();
   }
   async function rellenarJ(j) {
-    $('jNombre').value = j.nombre; $('jPos').value = j.posicion; $('jEdad').value = j.edad;
+    $('jCedula').value = j.cedula || ''; $('jNombre').value = j.nombre; $('jPos').value = j.posicion; $('jEdad').value = j.edad;
     $('jRitmo').value = j.ritmo; $('jTiro').value = j.tiro; $('jPase').value = j.pase; $('jDisp').checked = j.disponible;
     $('jPais').value = j.pais_id; await llenarLigas($('jLiga'), j.pais_id, j.liga_id); await llenarEquipos(j.liga_id, j.equipo_id);
   }

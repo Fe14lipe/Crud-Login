@@ -1,11 +1,13 @@
-# ⚽ Pomasqui Stream: CRUD + Login con MVC
+# ⚽ Peloteros: red social de fútbol barrial (CRUD + Login con MVC)
 
 ![Node.js](https://img.shields.io/badge/Node.js-20.12%2B-339933?logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?logo=javascript&logoColor=black)
 ![Estado](https://img.shields.io/badge/Estado-Funcional-brightgreen)
 
-Aplicación web para gestionar los partidos de una plataforma de **streaming de fútbol**. Un usuario inicia sesión y, desde una sección protegida, crea, consulta, edita y elimina streams. Sin sesión, ni la página ni la API son accesibles.
+Aplicación web de **fútbol barrial** con datos reales de la Liga Barrial de Pomasqui. Un usuario inicia sesión y, desde una sección protegida, administra jugadores y streams de partidos, publica, comenta y sigue equipos. Sin sesión, ni la página ni la API son accesibles.
+
+🌐 **App desplegada:** <https://peloteros-srny.onrender.com> (plan gratuito de Render: la primera carga puede tardar unos 50 segundos).
 
 Proyecto académico que aplica el patrón **MVC**, operaciones **CRUD** y **autenticación** con contraseña encriptada.
 
@@ -38,9 +40,10 @@ Proyecto académico que aplica el patrón **MVC**, operaciones **CRUD** y **aute
   - **Red social funcional:** publicar, borrar tus publicaciones, me gusta, comentarios, seguir equipos y guardar jugadores (todo en PostgreSQL).
   - **Explorar:** tabla de posiciones, goleadores y equipos reales de la Liga Barrial de Pomasqui.
   - **Admin:** CRUD de jugadores (dropdowns en cascada País → Liga → Equipo) y de streams.
-- **Código de jugador autogenerado** (`IDENTITY` de PostgreSQL): no se escribe a mano. Los demás datos del jugador (nombre, posición, edad, valoraciones y equipo) también se validan en el servidor.
+- **Validación en Back-End de la cédula (dato sensible):** al crear o editar un jugador, el servidor valida la **cédula ecuatoriana** (10 dígitos, provincia 01-24, tercer dígito 0-5 y dígito verificador con el algoritmo módulo 10) antes de grabar en la base ([`controllers/cedula.js`](controllers/cedula.js)). El formulario no la valida a propósito: el navegador puede saltarse el JavaScript, el servidor no. Además la cédula es única y se muestra enmascarada en la tabla (`17••••••65`).
+- **Código de jugador autogenerado** (`IDENTITY` de PostgreSQL): no se escribe a mano. Nombre, posición, edad, valoraciones y equipo también se validan en el servidor.
 - **Dropdowns en cascada:** al elegir el **país** se cargan solo las **ligas** de ese país (no se escribe ninguna clave foránea a mano).
-- **Validación en Back-End del dato sensible** (URL de transmisión): debe ser `https://` y única; título, estado y liga también se validan en el servidor antes de grabar. Las restricciones `UNIQUE`, `FOREIGN KEY` y `CHECK` de la BD son la última barrera.
+- **Validación en Back-End de la URL del stream:** debe ser `https://` y única; título, estado y liga también se validan en el servidor antes de grabar. Las restricciones `UNIQUE`, `FOREIGN KEY` y `CHECK` de la BD son la última barrera.
 - **Contraseña encriptada** con hash MD5.
 - **Credenciales fuera del código:** se configuran en un archivo `.env` que no se sube a Git.
 
