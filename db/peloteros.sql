@@ -7,8 +7,7 @@ CREATE TABLE jugadores (
   codigo     INT GENERATED ALWAYS AS IDENTITY (START WITH 1000) UNIQUE, -- código autogenerado, no se escribe a mano
   nombre     VARCHAR(80) NOT NULL,
   -- DATO SENSIBLE: la cédula se valida en el back-end (algoritmo módulo 10) antes de grabar.
-  -- Es opcional solo para los jugadores de demostración (no se inventan cédulas); la app la exige al crear o editar.
-  cedula     VARCHAR(10) UNIQUE CHECK (cedula ~ '^[0-9]{10}$'),
+  cedula     VARCHAR(10) NOT NULL UNIQUE CHECK (cedula ~ '^[0-9]{10}$'),
   posicion   VARCHAR(3) NOT NULL CHECK (posicion IN ('POR','DFC','LD','LI','MCD','MC','MCO','ED','EI','DC')),
   edad       INT NOT NULL CHECK (edad BETWEEN 14 AND 60),
   ritmo      INT NOT NULL CHECK (ritmo BETWEEN 1 AND 99),
@@ -54,14 +53,14 @@ CREATE TABLE guardados (
   PRIMARY KEY (usuario, jugador_id)
 );
 
--- Jugadores de demostración (perfiles y valoraciones ilustrativos, no son personas reales)
-INSERT INTO jugadores (nombre, posicion, edad, ritmo, tiro, pase, equipo_id) VALUES
-  ('Mateo Ruiz',    'DC', 18, 88, 84, 76, (SELECT id FROM equipos WHERE nombre = 'Aston F.C.')),
-  ('Johan Mina',    'EI', 19, 92, 78, 81, (SELECT id FROM equipos WHERE nombre = 'Manabí F.C.')),
-  ('Nicolás Vera',  'MC', 17, 78, 75, 89, (SELECT id FROM equipos WHERE nombre = 'F.C. Old Soccer')),
-  ('Kevin Ortiz',   'LD', 20, 85, 66, 79, (SELECT id FROM equipos WHERE nombre = 'Inter Lunas')),
-  ('Dylan Paredes', 'MCO', 18, 80, 83, 86, (SELECT id FROM equipos WHERE nombre = '11 05 Olmedo')),
-  ('Bryan Chiluisa','DFC', 21, 70, 55, 72, (SELECT id FROM equipos WHERE nombre = 'Técnico Santa Rosa'));
+-- Jugadores de demostración (perfiles, valoraciones y cédulas SINTÉTICAS: cumplen el algoritmo pero no son de personas reales)
+INSERT INTO jugadores (cedula, nombre, posicion, edad, ritmo, tiro, pase, equipo_id) VALUES
+  ('1700000019', 'Mateo Ruiz',    'DC', 18, 88, 84, 76, (SELECT id FROM equipos WHERE nombre = 'Aston F.C.')),
+  ('1700000027', 'Johan Mina',    'EI', 19, 92, 78, 81, (SELECT id FROM equipos WHERE nombre = 'Manabí F.C.')),
+  ('1700000035', 'Nicolás Vera',  'MC', 17, 78, 75, 89, (SELECT id FROM equipos WHERE nombre = 'F.C. Old Soccer')),
+  ('1700000043', 'Kevin Ortiz',   'LD', 20, 85, 66, 79, (SELECT id FROM equipos WHERE nombre = 'Inter Lunas')),
+  ('1700000050', 'Dylan Paredes', 'MCO', 18, 80, 83, 86, (SELECT id FROM equipos WHERE nombre = '11 05 Olmedo')),
+  ('1700000068', 'Bryan Chiluisa','DFC', 21, 70, 55, 72, (SELECT id FROM equipos WHERE nombre = 'Técnico Santa Rosa'));
 
 -- Publicaciones de clubes con resultados reales (Segunda Etapa, Fecha 7)
 INSERT INTO publicaciones (autor, equipo_id, texto, local_nombre, local_goles, visita_nombre, visita_goles, pie, creado_en) VALUES
