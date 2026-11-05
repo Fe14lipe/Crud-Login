@@ -164,6 +164,7 @@ Crud-Login/
 ├── db/schema.sql      # Tablas y datos de ejemplo
 ├── db/peloteros.sql   # Jugadores y red social
 ├── db/liga.sql        # Datos de la liga (generado por el script)
+├── db/migracion-solo-ecuador.sql  # Para bases ya creadas: deja solo Ecuador (LigaPro + liga barrial)
 ├── scripts/scrape-liga.js  # Descarga los datos de la liga y genera db/liga.sql
 ├── views/index.html   # Vista protegida (CRUD)
 ├── public/login.html  # Vista pública (login)

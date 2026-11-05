@@ -1,4 +1,4 @@
--- Generado por scripts/scrape-liga.js desde https://pomasqui.sadcaftorneos.com/maxima (2026-11-04)
+-- Generado por scripts/scrape-liga.js desde https://pomasqui.sadcaftorneos.com/maxima (2026-11-05)
 -- Ejecutar DESPUÉS de db/schema.sql
 
 DROP TABLE IF EXISTS goleadores, posiciones, equipos CASCADE;
@@ -42,6 +42,15 @@ INSERT INTO equipos (nombre, sigla, fundado, liga_id) VALUES
   ('Manabí F.C.', 'MFC', '2025-03-23', (SELECT id FROM ligas WHERE nombre = 'Liga Deportiva Barrial Pomasqui')),
   ('Santos S.P', 'SSP', '2012-11-01', (SELECT id FROM ligas WHERE nombre = 'Liga Deportiva Barrial Pomasqui')),
   ('Técnico Santa Rosa', 'TSR', '1979-06-08', (SELECT id FROM ligas WHERE nombre = 'Liga Deportiva Barrial Pomasqui'));
+
+-- Equipos de ejemplo de la LigaPro (para que el desplegable País > Liga > Equipo funcione también ahí)
+INSERT INTO equipos (nombre, sigla, fundado, liga_id) VALUES
+  ('Barcelona SC', 'BSC', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Emelec', 'EME', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Liga de Quito', 'LDU', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Independiente del Valle', 'IDV', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('El Nacional', 'ELN', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro')),
+  ('Aucas', 'AUC', NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro'));
 
 INSERT INTO posiciones (equipo_id, etapa, pj, pg, pe, pp, gf, gc, pts) VALUES
   ((SELECT id FROM equipos WHERE nombre = 'Aston F.C.'), 'Segunda Etapa', 7, 6, 0, 1, 28, 15, 18),

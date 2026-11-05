@@ -18,6 +18,8 @@ const bajar = async (p) => {
   if (!r.ok) throw new Error(`${p}: HTTP ${r.status}`);
   return texto(await r.text());
 };
+// Equipos de ejemplo de LigaPro (no vienen del sitio de la liga barrial)
+const LIGAPRO = [['Barcelona SC', 'BSC'], ['Emelec', 'EME'], ['Liga de Quito', 'LDU'], ['Independiente del Valle', 'IDV'], ['El Nacional', 'ELN'], ['Aucas', 'AUC']];
 const q = (s) => `'${String(s).replace(/'/g, "''")}'`; // escapa comillas para SQL
 
 (async () => {
@@ -90,6 +92,10 @@ INSERT INTO ligas (nombre, pais_id) VALUES ('Liga Deportiva Barrial Pomasqui', (
 
 INSERT INTO equipos (nombre, sigla, fundado, liga_id) VALUES
 ${equipos.map((e) => `  (${q(e.nombre)}, ${q(e.sigla)}, ${q(e.fundado)}, (SELECT id FROM ligas WHERE nombre = 'Liga Deportiva Barrial Pomasqui'))`).join(',\n')};
+
+-- Equipos de ejemplo de la LigaPro (para que el desplegable País > Liga > Equipo funcione también ahí)
+INSERT INTO equipos (nombre, sigla, fundado, liga_id) VALUES
+${LIGAPRO.map(([n, s]) => `  (${q(n)}, ${q(s)}, NULL, (SELECT id FROM ligas WHERE nombre = 'LigaPro'))`).join(',\n')};
 
 INSERT INTO posiciones (equipo_id, etapa, pj, pg, pe, pp, gf, gc, pts) VALUES
 ${posiciones.map((f) => `  (${eid(f.nombre)}, ${q(f.etapa)}, ${f.pj}, ${f.pg}, ${f.pe}, ${f.pp}, ${f.gf}, ${f.gc}, ${f.pts})`).join(',\n')};

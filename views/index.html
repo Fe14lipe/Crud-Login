@@ -297,7 +297,7 @@
     <div class="sec"><h2>Equipos</h2></div>${gridEquipos(equipos.filter((e) => coincide(e.nombre)))}`;
 
   const gridEquipos = (lista) => `<div class="equipos">${lista.map((e) => `
-    <div class="box equipo"><div class="logo-club">${esc(e.sigla)}</div><div><b>${esc(e.nombre)}</b><small>Fundado ${esc(String(e.fundado).slice(0, 4))}</small></div>
+    <div class="box equipo"><div class="logo-club">${esc(e.sigla)}</div><div><b>${esc(e.nombre)}</b><small>${e.fundado ? `Fundado ${esc(String(e.fundado).slice(0, 4))}` : 'LigaPro'}</small></div>
       <button class="btn-borde" style="margin:0" onclick="seguir(${e.id})">${e.seguido ? '✓ Siguiendo' : '+ Seguir'}</button></div>`).join('') || '<p class="vacio">Sin equipos.</p>'}</div>`;
 
   const vRed = () => `<div class="sec"><div class="eyebrow">Tu fútbol, más cerca</div><h2>Mis equipos</h2></div>

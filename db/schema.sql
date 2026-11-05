@@ -24,14 +24,11 @@ CREATE TABLE streams (
   creado_en  TIMESTAMP NOT NULL DEFAULT now()
 );
 
-INSERT INTO paises (nombre) VALUES ('Ecuador'), ('España'), ('Inglaterra'), ('Argentina');
+-- Solo Ecuador: LigaPro aquí y la Liga Barrial de Pomasqui en db/liga.sql
+INSERT INTO paises (nombre) VALUES ('Ecuador');
 
-INSERT INTO ligas (nombre, pais_id) VALUES
-  ('LigaPro', 1),
-  ('La Liga', 2),
-  ('Premier League', 3),
-  ('Liga Profesional', 4);
+INSERT INTO ligas (nombre, pais_id) VALUES ('LigaPro', 1);
 
 INSERT INTO streams (titulo, liga_id, estado, url) VALUES
-  ('Real Madrid vs Barcelona', 2, 'EN VIVO',  'https://stream.example.com/clasico'),
-  ('Liverpool vs Man City',    3, 'PRÓXIMO', 'https://stream.example.com/liverpool-city');
+  ('Barcelona SC vs Emelec',                   1, 'EN VIVO', 'https://stream.example.com/clasico-del-astillero'),
+  ('Liga de Quito vs Independiente del Valle', 1, 'PRÓXIMO', 'https://stream.example.com/ldu-idv');
